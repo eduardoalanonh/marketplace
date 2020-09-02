@@ -3,18 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Store;
+use App\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreRequest;
 
 class StoreController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('user.has.store')->only(['create','store']);
+    }
+
     public function index()
     {
-        $stores = \App\Store::paginate(10);
-        return view('admin.stores.index', compact('stores'));
+        $store = auth()->user()->store;
+
+        return view('admin.stores.index', compact('store'));
     }
 
     public function create()
     {
+
         $users = \App\User::all([
             'id','name'
         ]);
@@ -22,15 +32,45 @@ class StoreController extends Controller
         return view('admin.stores.create', compact('users'));
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $data = $request->all();
 
-        $user = \App\User::find($data['user']);
+
+        $data = $request->all();
+        $user = auth()->user();
 
         $store = $user->store()->create($data);
 
-        return $store;
+        flash('Loja Criada com Sucesso')->success();
+        return redirect()->route('admin.stores.index');
 
+    }
+
+    public function edit($store)
+    {
+        $store = Store::find($store);
+
+        return view ('admin.stores.edit', compact('store'));
+    }
+
+    public function update(StoreRequest $request, $store)
+    {
+       $data = $request->all();
+
+       $store = Store::find($store);
+       $store->update($data);
+
+       flash('Loja Atualizada com Sucesso')->success();
+       return redirect()->route('admin.stores.index');
+    }
+
+    public function destroy($store)
+    {
+        $store = Store::find($store);
+
+        $store->delete();
+
+        flash('Loja Removida com Sucesso')->success();
+        return redirect()->route('admin.stores.index');
     }
 }
