@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<h1> Criar Loja</h1>
-<form action="{{route('admin.stores.update', ['store' => $store->id])}}" method="post">
+<h1> Editar loja</h1>
+<form action="{{route('admin.stores.update', ['store' => $store->id])}}" method="post" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="form-group">
@@ -26,9 +26,13 @@
     </div>
 
     <div class="form-group">
-        <label>slug</label>
-        <input type="text" name="slug"  class="form-control"  value="{{$store->slug}}">
+        <p>
+            <img src="{{asset('storage/' . $store->logo)}}" alt="">
+        </p>
+        <label for="logo">Logo loja</label>
+        <input type="file" name="logo" class="form-control" multiple>
     </div>
+
 
     <div>
         <button type="submit" class="btn btn-success btn-lg">Atualizar loja</button>

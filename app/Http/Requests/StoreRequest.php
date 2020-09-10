@@ -28,6 +28,7 @@ class StoreRequest extends FormRequest
             'description' => 'required|min:10',
             'phone' => 'required',
             'mobile_phone' => 'required',
+            'logo' => 'image'
 
         ];
     }
@@ -36,7 +37,8 @@ class StoreRequest extends FormRequest
     {
         return[
           'min' => 'Campo deve ter :min caracteres',
-          'required' => 'Campo obrigatorio'
+          'required' => 'Campo obrigatorio',
+            'image' => 'Arquivo nao e img valida!'
         ];
     }
 }

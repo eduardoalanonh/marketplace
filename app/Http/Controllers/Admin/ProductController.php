@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use App\Http\Requests\ProductRequest;
+use App\traits\UploadTrait;
 
 class ProductController extends Controller
 {
+    use UploadTrait;
+
     private $product;
 
     public function __construct(Product $product)
@@ -54,17 +57,23 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $images = $request->file('photos');
-        foreach($images as $image)
-        {
-            $image->store('products','public');
-        }
 
         $data = $request->all();
 
+        $categories =  $request->get('categories',null);
+
         $store = auth()->user()->store;
         $product = $store->products()->create($data);
-        $product->categories()->sync($data['categories']);
+        $product->categories()->sync($categories);
+
+        if($request->hasFile('photos'))
+        {
+
+            $images = $this->imageUpload($request->file('photos'), 'image');
+
+            //insercao images
+            $product->photos()->createMany($images);
+        }
 
         flash('Produto criado com sucesso!')->success();
         return redirect()->route('admin.products.index');
@@ -100,17 +109,28 @@ class ProductController extends Controller
      *
      * @param ProductRequest $request
      * @param $product
-     * @return void
      */
     public function update(ProductRequest $request, $product)
     {
         $data = $request->all();
+        $categories =  $request->get('categories',null);
 
         $product = $this->product->find($product);
 
         $product->update($data);
 
-        $product->categories()->sync($data['categories']);
+        if($categories) {
+            $product->categories()->sync($categories);
+        }
+
+        if($request->hasFile('photos'))
+        {
+
+            $images = $this->imageUpload($request->file('photos'), 'image');
+
+            //insercao images
+            $product->photos()->createMany($images);
+        }
 
 
         flash('Produto atualizado com sucesso!')->success();
@@ -133,4 +153,5 @@ class ProductController extends Controller
         flash('Produto removido com sucesso!')->overlay('oi','teste');
         return redirect()->route('admin.products.index');
     }
+
 }

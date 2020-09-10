@@ -2,7 +2,7 @@
 
 @section('content')
     <h1> Criar Loja</h1>
-    <form action="{{route('admin.stores.store')}}" method="post">
+    <form action="{{route('admin.stores.store')}}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
         <div class="form-group">
             <label>Nome loja</label>
@@ -46,9 +46,10 @@
         </div>
 
         <div class="form-group">
-            <label>slug</label>
-            <input type="text" name="slug" class="form-control">
+            <label for="logo">Logo loja</label>
+            <input type="file" name="logo" class="form-control" multiple>
         </div>
+
         <div>
             <button type="submit" class="btn btn-success btn-lg">Criar loja</button>
         </div>

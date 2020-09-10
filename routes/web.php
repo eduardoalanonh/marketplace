@@ -13,9 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/','HomeController@index' )->name('home');
+Route::get('/product/{slug}', 'HomeController@single')->name('product.single');
+Route::prefix('cart')->name('cart.')->group(function (){
+    Route::get('/','CartController@index')->name('index');
+    Route::post('add', 'CartController@add')->name('add');
+    Route::get('remove/{slug}','CartController@remove')->name('remove');
+    Route::get('cancel','CartController@cancel')->name('cancel');
+
+});
+
+
 
 Route::get('/model', function () {
     $loja = \App\Store::find(1);
@@ -27,19 +35,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('admin')->name('admin.')->namespace('Admin')->group(static function () {
 
-//    Route::prefix('stores')->name('stores.') ->group(function (){
-//
-//        Route::get('/','StoreController@index')->name('index');
-//        Route::get('/create','StoreController@create')->name('create');
-//        Route::post('/store','StoreController@store')->name('store');
-//        Route::get('/{store}/edit','StoreController@edit')->name('edit');
-//        Route::post('/update/{store}','StoreController@update')->name('update');
-//        Route::get('/destroy/{store}', 'StoreController@destroy')->name('destroy');
-//    });
-
         Route::resource('stores', 'StoreController');
         Route::resource('products', 'ProductController');
         Route::resource('categories','CategoryController');
+        Route::post('photos/remove','ProductPhotoCOntroller@removePhoto')->name('photo.remove');
     });
 
 });
