@@ -24,11 +24,10 @@ Route::prefix('cart')->name('cart.')->group(function (){
 });
 
 
-
-Route::get('/model', function () {
-    $loja = \App\Store::find(1);
-
-    return dd($loja->products());
+Route::prefix('checkout')->name('checkout.')->group(function (){
+    Route::get('/','CheckoutCOntroller@index')->name('index');
+    Route::post('/proccess', 'CheckoutController@proccess')->name('proccess');
+    Route::get('/thanks','CheckoutController@thanks')->name('thanks');
 });
 
 Route::group(['middleware' => ['auth']], function () {

@@ -10,16 +10,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
-        .front.row{
+        .front.row {
             margin-bottom: 40px;
         }
     </style>
+    @yield('stylesheets')
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-bottom: 40px;">
 
     <a class="navbar-brand" href="{{route('home')}}">Marketplace L6</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -31,21 +33,17 @@
             </li>
         </ul>
 
-        @auth
-
-            <div class="my-2 my-lg-0">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a href="{{route('cart.index')}}" class="nav-link">
-                            @if(session()->has('cart'))
-                                <span class="badge badge-danger">{{count(session()->get('cart'))}}</span>
-                            @endif
-                            <i class="fa fa-shopping-cart fa-2x"></i></a>
-                    </li>
-                </ul>
-            </div>
-        @endauth
-
+        <div class="my-2 my-lg-0">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="{{route('cart.index')}}" class="nav-link">
+                        @if(session()->has('cart'))
+                            <span class="badge badge-danger">{{count(session()->get('cart'))}}</span>
+                        @endif
+                        <i class="fa fa-shopping-cart fa-2x"></i></a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -53,5 +51,6 @@
     @include('flash::message')
     @yield('content')
 </div>
+@yield('scripts')
 </body>
 </html>
