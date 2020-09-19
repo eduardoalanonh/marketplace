@@ -42,6 +42,11 @@
 
         <div class="my-2 my-lg-0">
             <ul class="navbar-nav mr-auto">
+                @auth
+                <li class="nav-item">
+                    <a href="{{route('user.orders')}}" class="nav-link @if(request()->is('my-orders')) active @endif">Meus pedidos</a>
+                </li>
+                @endauth
                 <li class="nav-item">
                     <a href="{{route('cart.index')}}" class="nav-link">
                         @if(session()->has('cart'))

@@ -34,6 +34,7 @@ Route::prefix('checkout')->name('checkout.')->group(function (){
 });
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('my-orders', 'UserOrderController@index')->name('user.orders');
 
     Route::prefix('admin')->name('admin.')->namespace('Admin')->group(static function () {
 
@@ -41,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('products', 'ProductController');
         Route::resource('categories','CategoryController');
         Route::post('photos/remove','ProductPhotoCOntroller@removePhoto')->name('photo.remove');
+        Route::get('/orders/my','OrdersController@index')->name('orders.my');
     });
 
 });

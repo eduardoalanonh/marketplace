@@ -128,7 +128,7 @@
                 success: function (res) {
                     // Display a success toast, with a title
                     toastr.success(res.data.message, 'Sucesso')
-                   window.location.href = '{{route('checkout.thanks')}}?order=' + res.data.order;
+                    window.location.href = '{{route('checkout.thanks')}}?order=' + res.data.order;
                 }
             })
         }
