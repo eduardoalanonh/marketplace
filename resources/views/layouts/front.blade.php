@@ -8,7 +8,7 @@
     <title>Marketplace</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <style>
         .front.row {
             margin-bottom: 40px;
@@ -34,7 +34,8 @@
 
             @foreach($categories as $category)
                 <li class="nav-item @if(request()->is('category/' . $category->slug)) active @endif">
-                    <a class="nav-link" href="{{route('category.single',['slug' => $category->slug])}}">{{$category->name}}</a>
+                    <a class="nav-link"
+                       href="{{route('category.single',['slug' => $category->slug])}}">{{$category->name}}</a>
                 </li>
             @endforeach
 
@@ -43,9 +44,17 @@
         <div class="my-2 my-lg-0">
             <ul class="navbar-nav mr-auto">
                 @auth
-                <li class="nav-item">
-                    <a href="{{route('user.orders')}}" class="nav-link @if(request()->is('my-orders')) active @endif">Meus pedidos</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"
+                           onclick="event.preventDefault(); document.querySelector('form.logout').submit()">Sair</a>
+                        <form action="{{route('logout')}}" class="logout" method="POST" style="display:none;">
+                            @csrf
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{route('user.orders')}}"
+                           class="nav-link @if(request()->is('my-orders')) active @endif">Meus pedidos</a>
+                    </li>
                 @endauth
                 <li class="nav-item">
                     <a href="{{route('cart.index')}}" class="nav-link">
@@ -63,6 +72,8 @@
     @include('flash::message')
     @yield('content')
 </div>
+
+<script src="{{asset('js/app.js')}}"></script>
 @yield('scripts')
 </body>
 </html>

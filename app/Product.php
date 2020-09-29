@@ -34,6 +34,8 @@ use Spatie\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStoreId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\ProductPhoto[] $photos
+ * @property-read int|null $photos_count
  */
 class Product extends Model
 {

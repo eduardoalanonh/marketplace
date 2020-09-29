@@ -30,9 +30,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $userStore = auth()->user()->store;
+        $user = auth()->user();
 
-        $products = $userStore->products()->paginate(10);
+        if (!$user->store()->exists()) {
+            flash('eh preciso criar uma loja para cadastrar produtos')->warning();
+            return redirect()->route('admin.stores.index');
+        }
+        $products = $user->store->products()->paginate(10);
 
         return view('admin.products.index', compact('products'));
     }
@@ -59,15 +63,15 @@ class ProductController extends Controller
     {
 
         $data = $request->all();
+        $data['price'] = formatPriceToDataBase($data['price']);
 
-        $categories =  $request->get('categories',null);
+        $categories = $request->get('categories', null);
 
         $store = auth()->user()->store;
         $product = $store->products()->create($data);
         $product->categories()->sync($categories);
 
-        if($request->hasFile('photos'))
-        {
+        if ($request->hasFile('photos')) {
 
             $images = $this->imageUpload($request->file('photos'), 'image');
 
@@ -82,7 +86,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function show($id)
@@ -101,7 +105,7 @@ class ProductController extends Controller
 
         $product = $this->product->findOrfail($product);
         $categories = \App\Category::all(['id', 'name']);
-        return view('admin.products.edit', compact('product','categories'));
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -113,18 +117,17 @@ class ProductController extends Controller
     public function update(ProductRequest $request, $product)
     {
         $data = $request->all();
-        $categories =  $request->get('categories',null);
+        $categories = $request->get('categories', null);
 
         $product = $this->product->find($product);
 
         $product->update($data);
 
-        if($categories) {
+        if ($categories) {
             $product->categories()->sync($categories);
         }
 
-        if($request->hasFile('photos'))
-        {
+        if ($request->hasFile('photos')) {
 
             $images = $this->imageUpload($request->file('photos'), 'image');
 
@@ -141,7 +144,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $product
+     * @param int $product
      * @return Response
      */
     public function destroy($product)
@@ -150,7 +153,7 @@ class ProductController extends Controller
         $product = $this->product->find($product);
         $product->delete();
 
-        flash('Produto removido com sucesso!')->overlay('oi','teste');
+        flash('Produto removido com sucesso!')->overlay('oi', 'teste');
         return redirect()->route('admin.products.index');
     }
 

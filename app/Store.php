@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\StoreReceiveNewOrder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Sluggable\HasSlug;
@@ -36,6 +37,10 @@ use Spatie\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|Store whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Store whereUserId($value)
  * @mixin \Eloquent
+ * @property string|null $logo
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\UserOrder[] $orders
+ * @property-read int|null $orders_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereLogo($value)
  */
 class Store extends Model
 {
@@ -44,7 +49,7 @@ class Store extends Model
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -65,6 +70,14 @@ class Store extends Model
 
     public function orders()
     {
-        return $this->belongsToMany(UserOrder::class,'order_store',null,'order_id');
+        return $this->belongsToMany(UserOrder::class, 'order_store', null, 'order_id');
+    }
+
+    public function notifyStoreOwners(array $storesId = [])
+    {
+        $stores = $this->whereIn('id', $storesId)->get();
+        return $stores->map(function ($store) {
+            return $store->user;
+        })->each->notify(new StoreReceiveNewOrder());
     }
 }

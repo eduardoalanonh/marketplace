@@ -14,9 +14,11 @@
         "guzzlehttp/guzzle": "^6.3",
         "laracasts/flash": "^3.1",
         "laravel/framework": "^7.24",
+        "laravel/nexmo-notification-channel": "^2.4",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.2",
         "pagseguro/pagseguro-php-sdk": "^6.0",
+        "ramsey/uuid": "^4.1",
         "spatie/laravel-sluggable": "^2.5"
     },
     "require-dev": {

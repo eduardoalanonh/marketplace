@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Payment\PagSeguro\CreditCard;
+use App\Payment\PagSeguro\notification;
+use App\Store;
+use App\UserOrder;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class CheckoutController extends Controller
 {
     public function index()
     {
-
         if (!auth()->check()) {
             return redirect()->route('login');
         }
@@ -33,7 +36,7 @@ class CheckoutController extends Controller
             $user = auth()->user();
             $cartItems = session()->get('cart');
             $stores = array_unique(array_column($cartItems,'store_id'));
-            $reference = ' XPTO';
+            $reference = Uuid::uuid4();
 
             $creditCardPayment = new CreditCard($cartItems, $user, $dataPost, $reference);
             $result = $creditCardPayment->doPayment();
@@ -44,11 +47,13 @@ class CheckoutController extends Controller
                 'pagseguro_code' => $result->getCode(),
                 'pagseguro_status' => $result->getStatus(),
                 'items' => serialize($cartItems),
-                'store_id' => 43
             ];
 
             $userOrder = $user->orders()->create($userOrder);
             $userOrder->stores()->sync($stores);
+
+            //notificar loja de novo pedido
+             $store = (new Store())->notifyStoreOwners($stores);
 
             session()->forget('cart');
             session()->forget('pagseguro_session_code');
@@ -76,6 +81,27 @@ class CheckoutController extends Controller
         return view('thanks');
     }
 
+    public function notification()
+    {
+       try{
+           $notification = new Notification();
+           $refence = base64_decode($notification->getReference());
+           $userOrder = UserOrder::whereReference();
+           $userOrder->update([
+               'pagseguro_status' => $notification->getStatus($refence)
+           ]);
+
+           if($notification->getStatus == 3)
+           {
+
+           }
+           return response()->json([], 204);
+       }catch (\Exception $e)
+       {
+           return response()->json([], 500);
+       }
+    }
+
 
     private function makePagSeguroSession()
     {
@@ -83,6 +109,7 @@ class CheckoutController extends Controller
             $sessionCode = \PagSeguro\Services\Session::create(
                 \PagSeguro\Configuration\Configure::getAccountCredentials()
             );
+
             session()->put('pagseguro_session_code', $sessionCode->getResult());
         }
 
